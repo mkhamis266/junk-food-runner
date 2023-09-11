@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  text-align: center;
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  top: 0%;
+  left: 0%;
+}
+.container {
+  position: absolute;
+  width: 80%;
+  left: 10%;
+  top: 15%;
+}
+
+canvas {
+  border: 2px solid black;
+  margin: 10px auto;
+}
+
+#score,
+#timer {
+  font-size: 20px;
+}
+
+#images {
+  display: none;
+}
