@@ -1,6 +1,18 @@
 $(document).ready(function () {
+  const canvasContainer = document.querySelector(".container");
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
+
+  // Set the canvas dimensions to match its parent container
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight - 100;
+
+  // Add an event listener to adjust the canvas size when the window is resized
+  window.addEventListener("resize", () => {
+    canvas.width = canvasContainer.clientWidth;
+    canvas.height = canvasContainer.clientHeight - 100;
+  });
+
   const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 150, score: 0 };
   const junkFood = [];
   const junkFoodImages = document.querySelectorAll(".junkFoodImg");
