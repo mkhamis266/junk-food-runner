@@ -12,6 +12,7 @@ body {
   height: 100svh;
   top: 0%;
   left: 0%;
+  overscroll-behavior: contain;
 }
 .container {
   position: absolute;

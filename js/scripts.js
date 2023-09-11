@@ -181,4 +181,11 @@ $(document).ready(function () {
   canvas.addEventListener("touchend", function (e) {
     isDragging = false;
   });
+
+  $(document).on("contextmenu", function (e) {
+    e.preventDefault();
+  });
+  $(document).on("dblclick", function (e) {
+    e.preventDefault();
+  });
 });
