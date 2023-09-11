@@ -2,7 +2,8 @@ $(document).ready(function () {
   const canvasContainer = document.querySelector(".container");
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
-
+  const explosionSound = document.querySelector(".explosionSound");
+  let isExplodePlayer = false;
   // Set the canvas dimensions to match its parent container
   canvas.width = canvasContainer.clientWidth;
   canvas.height = canvasContainer.clientHeight - 100;
@@ -13,7 +14,7 @@ $(document).ready(function () {
     canvas.height = canvasContainer.clientHeight - 100;
   });
 
-  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 150, score: 0 };
+  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 40, score: 0 };
   const junkFood = [];
   const junkFoodImages = document.querySelectorAll(".junkFoodImg");
   let junkFoodInternal = null;
@@ -90,6 +91,8 @@ $(document).ready(function () {
         if (food.isJunkFood) {
           if (player.size < player.maxSize) {
             player.size += 5;
+          } else {
+            isExplodePlayer = true;
           }
           player.score -= 5;
         } else {
@@ -124,14 +127,36 @@ $(document).ready(function () {
     // }
 
     // Draw player
-    ctx.fillStyle = "blue";
-    ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+    if (isExplodePlayer) {
+      explodePlayer();
+      return;
+    } else {
+      ctx.fillStyle = "blue";
+      ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+    }
 
     // Draw score
     document.getElementById("score").textContent = `Score: ${Math.max(0, Math.floor(player.score))}`;
 
     // Timer
     requestAnimationFrame(update);
+  }
+
+  function explodePlayer() {
+    clearInterval(timer.interval);
+    clearInterval(junkFoodInternal);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.drawImage(explodeGif, player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+    $(canvas).hide();
+    $(".explodeContainer").show();
+    explosionSound.currentTime = 0;
+    explosionSound.play();
+    setTimeout(() => {
+      $(".explodeContainer").hide();
+      $(canvas).show();
+      explosionSound.pause();
+      gameOver();
+    }, 2000);
   }
 
   // Start the game
@@ -143,9 +168,10 @@ $(document).ready(function () {
     junkFood.length = 0;
     healthyFood.length = 0;
     timer.seconds = 60;
+    isExplodePlayer = false;
     document.getElementById("startButton").disabled = true;
     timer.interval = setInterval(countDown, 1000);
-    junkFoodInternal = setInterval(createJunkFood, 500);
+    junkFoodInternal = setInterval(createJunkFood, 1200);
     // setInterval(createHealthyFood, 5000); // Create healthy food every 5 seconds
     update();
   });
@@ -154,12 +180,17 @@ $(document).ready(function () {
     timer.seconds--;
     document.getElementById("timer").textContent = `Time: ${timer.seconds}`;
     if (timer.seconds <= 0) {
-      clearInterval(timer.interval);
-      clearInterval(junkFoodInternal);
-      alert(`Game Over! Your Score: ${Math.max(0, Math.floor(player.score))}`);
-      document.getElementById("startButton").disabled = false;
+      gameOver();
       return;
     }
+  }
+
+  function gameOver() {
+    clearInterval(timer.interval);
+    clearInterval(junkFoodInternal);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    alert(`Game Over! Your Score: ${Math.max(0, Math.floor(player.score))}`);
+    document.getElementById("startButton").disabled = false;
   }
 
   // Handle touch events for player movement

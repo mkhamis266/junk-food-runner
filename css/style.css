@@ -34,3 +34,13 @@ canvas {
 #images {
   display: none;
 }
+
+.explodeContainer {
+  width: 100%;
+  display: none;
+  text-align: center;
+}
+.explodeContainer img {
+  width: 50%;
+  height: auto;
+}
