@@ -106,7 +106,6 @@ $(document).ready(function () {
   function drawLives() {
     $("#lives").html("");
     for (let i = 0; i < lives; i++) {
-      console.log(i);
       $("<span/>").html("♥").appendTo($("#lives"));
     }
   }
@@ -118,7 +117,7 @@ $(document).ready(function () {
   function handleFoodCollision(food) {
     if (food.isJunkFood) {
       lives--;
-      drawLives()
+      drawLives();
       if (player.size < player.maxSize) {
         player.size += 10;
       } else {
