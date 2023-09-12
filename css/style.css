@@ -27,7 +27,8 @@ canvas {
 }
 
 #score,
-#timer {
+#timer,
+#lives {
   font-size: 20px;
 }
 

@@ -8,6 +8,7 @@ $(document).ready(function () {
   let isExplodePlayer = false;
   let isDraggingPlayer = false;
   let isGameRunning = false;
+  let lives = 3;
 
   // Set canvas dimensions and handle window resize
   function setCanvasDimensions() {
@@ -18,7 +19,7 @@ $(document).ready(function () {
   window.addEventListener("resize", setCanvasDimensions);
   setCanvasDimensions();
 
-  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 70, score: 0 };
+  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 50, score: 0 };
   const junkFood = [];
   const junkFoodImages = document.querySelectorAll(".junkFoodImg");
   let junkFoodInternal = null;
@@ -63,8 +64,8 @@ $(document).ready(function () {
 
     drawJunkFood();
     drawPlayer();
-    drawScore();
-
+    // drawScore();
+    drawLives();
     if (isExplodePlayer) {
       explodePlayer();
     } else {
@@ -102,24 +103,31 @@ $(document).ready(function () {
     document.getElementById("score").textContent = `Score: ${Math.max(0, Math.floor(player.score))}`;
   }
 
+  function drawLives() {
+    document.getElementById("lives").textContent = `Lives: ${lives}`;
+  }
+
   function checkCollisionWithPlayer(food) {
     return food.x >= player.x - player.size / 2 && food.x <= player.x + player.size / 2 && food.y >= player.y - player.size / 2 && food.y <= player.y + player.size / 2;
   }
 
   function handleFoodCollision(food) {
     if (food.isJunkFood) {
+      lives--;
       if (player.size < player.maxSize) {
-        player.size += 5;
+        player.size += 10;
       } else {
         isExplodePlayer = true;
       }
       player.score -= 5;
-    } else {
-      if (player.size > player.minSize) {
-        player.size -= 5;
-      }
-      player.score += 10;
     }
+    /* for healthy food */
+    // else {
+    //   if (player.size > player.minSize) {
+    //     player.size -= 10;
+    //   }
+    //   player.score += 10;
+    // }
   }
 
   function isOutOfBounds(food) {
@@ -176,6 +184,8 @@ $(document).ready(function () {
     player.score = 0;
     junkFood.length = 0;
     timer.seconds = 30;
+    lives = 3;
+    drawLives();
     document.getElementById("timer").textContent = `Time: ${timer.seconds}`;
     isExplodePlayer = false;
   }
