@@ -15,10 +15,9 @@ body {
   overscroll-behavior: contain;
 }
 .container {
-  position: absolute;
   width: 80%;
   aspect-ratio: 2/1;
-  left: 10%;
+  margin: 0 auto;
 }
 
 canvas {
