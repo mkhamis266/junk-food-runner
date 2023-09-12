@@ -4,6 +4,8 @@ $(document).ready(function () {
   const ctx = canvas.getContext("2d");
   const explosionSound = document.querySelector(".explosionSound");
   let isExplodePlayer = false;
+  let isDraggingPlayer = false;
+  let isGameRunning = false;
   // Set the canvas dimensions to match its parent container
   canvas.width = canvasContainer.clientWidth;
   canvas.height = canvasContainer.clientHeight - 100;
@@ -14,13 +16,13 @@ $(document).ready(function () {
     canvas.height = canvasContainer.clientHeight - 100;
   });
 
-  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 40, score: 0 };
+  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 70, score: 0 };
   const junkFood = [];
   const junkFoodImages = document.querySelectorAll(".junkFoodImg");
   let junkFoodInternal = null;
   const healthyFood = [];
   const healthFoodImages = document.querySelectorAll(".healthFoodImg");
-  const timer = { seconds: 60, interval: null };
+  const timer = { seconds: 30, interval: null };
   let isDragging = false;
 
   // Create junk food and healthy food items
@@ -156,22 +158,16 @@ $(document).ready(function () {
       $(canvas).show();
       explosionSound.pause();
       gameOver();
+      resetGame();
     }, 2000);
   }
 
   // Start the game
   document.getElementById("startButton").addEventListener("click", function () {
-    player.x = canvas.width / 2;
-    player.y = canvas.height / 2;
-    player.size = 30;
-    player.score = 0;
-    junkFood.length = 0;
-    healthyFood.length = 0;
-    timer.seconds = 60;
-    isExplodePlayer = false;
     document.getElementById("startButton").disabled = true;
+    isGameRunning = true;
     timer.interval = setInterval(countDown, 1000);
-    junkFoodInternal = setInterval(createJunkFood, 1200);
+    junkFoodInternal = setInterval(createJunkFood, 500);
     // setInterval(createHealthyFood, 5000); // Create healthy food every 5 seconds
     update();
   });
@@ -181,11 +177,13 @@ $(document).ready(function () {
     document.getElementById("timer").textContent = `Time: ${timer.seconds}`;
     if (timer.seconds <= 0) {
       gameOver();
+      resetGame();
       return;
     }
   }
 
   function gameOver() {
+    isGameRunning = false;
     clearInterval(timer.interval);
     clearInterval(junkFoodInternal);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -193,24 +191,41 @@ $(document).ready(function () {
     document.getElementById("startButton").disabled = false;
   }
 
+  function resetGame() {
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
+    player.size = 30;
+    player.score = 0;
+    junkFood.length = 0;
+    healthyFood.length = 0;
+    timer.seconds = 30;
+    document.getElementById("timer").textContent = `Time: ${timer.seconds}`;
+    isExplodePlayer = false;
+  }
+
   // Handle touch events for player movement
   canvas.addEventListener("touchstart", function (e) {
-    isDragging = true;
+    const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    const touchY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+
+    if (touchX >= player.x - player.size / 2 && touchX <= player.x + player.size / 2 && touchY >= player.y - player.size / 2 && touchY <= player.y + player.size / 2) {
+      isDraggingPlayer = true;
+    }
   });
 
   canvas.addEventListener("touchmove", function (e) {
-    if (isDragging) {
+    if (isDraggingPlayer && isGameRunning) {
       const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
       const touchY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
 
       // Update player position based on touch input
-      player.x = touchX;
-      player.y = touchY;
+      player.x = Math.max(player.size / 2, Math.min(canvas.width - player.size / 2, touchX));
+      player.y = Math.max(player.size / 2, Math.min(canvas.height - player.size / 2, touchY));
     }
   });
 
   canvas.addEventListener("touchend", function (e) {
-    isDragging = false;
+    isDraggingPlayer = false;
   });
 
   $(document).on("contextmenu", function (e) {
