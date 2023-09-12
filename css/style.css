@@ -27,11 +27,13 @@ canvas {
 }
 
 #score,
-#timer,
-#lives {
-  font-size: 20px;
+#timer {
+  font-size: 32px;
 }
-
+#lives span {
+  font-size: 50px;
+  color: red;
+}
 #images {
   display: none;
 }
@@ -44,4 +46,9 @@ canvas {
 .explodeContainer img {
   width: 50%;
   height: auto;
+}
+
+#startButton {
+  padding: 10px 15px;
+  font-size: 24px;
 }

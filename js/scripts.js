@@ -65,7 +65,7 @@ $(document).ready(function () {
     drawJunkFood();
     drawPlayer();
     // drawScore();
-    drawLives();
+    // drawLives();
     if (isExplodePlayer) {
       explodePlayer();
     } else {
@@ -104,7 +104,11 @@ $(document).ready(function () {
   }
 
   function drawLives() {
-    document.getElementById("lives").textContent = `Lives: ${lives}`;
+    $("#lives").html("");
+    for (let i = 0; i < lives; i++) {
+      console.log(i);
+      $("<span/>").html("♥").appendTo($("#lives"));
+    }
   }
 
   function checkCollisionWithPlayer(food) {
@@ -114,6 +118,7 @@ $(document).ready(function () {
   function handleFoodCollision(food) {
     if (food.isJunkFood) {
       lives--;
+      drawLives()
       if (player.size < player.maxSize) {
         player.size += 10;
       } else {
