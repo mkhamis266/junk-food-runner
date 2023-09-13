@@ -4,45 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Junk Food Runner</title>
-    <link rel="stylesheet" href="css/style.css?v=2" />
+    <link rel="stylesheet" href="css/style.css?v=1" />
   </head>
   <body>
-    <div class="container">
-      <canvas id="gameCanvas"></canvas>
-      <div class="explodeContainer">
-        <img class="explodeGif" src="img/explode.gif" alt="" srcset="" />
-        <audio class="explosionSound" src="sounds/explosion.mp3"></audio>
-      </div>
-      <!-- <div id="score">Score: 0</div> -->
-      <div id="lives">
-        <span>♥</span>
-        <span>♥</span>
-        <span>♥</span>
-      </div>
-      <div id="timer">Time: 30</div>
-
-      <button id="startButton">Start Game</button>
-
-      <div id="images">
-        <img class="junkFoodImg" src="img/junk-food-1.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-2.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-3.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-4.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-5.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-6.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-7.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-8.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-9.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-10.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-11.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-12.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-13.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-14.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-15.png" alt="" />
-        <img class="junkFoodImg" src="img/junk-food-16.png" alt="" />
+    <div id="startPage">
+      <div id="gotoInstructionsButton"></div>
+    </div>
+    <div id="instructionsPage">
+      <div id="startButton"></div>
+    </div>
+    <div id="gamePage">
+      <div class="game-container">
+        <div class="header">
+          <div class="timeContainer">
+            <img src="img/time.png" height="40" alt="" />
+            <span id="timer">30 sec</span>
+          </div>
+          <div id="lives"><img src="img/lives/3.png" height="40" alt="" /> <span>: 3</span></div>
+        </div>
+        <div class="canvasContainer">
+          <canvas id="gameCanvas"></canvas>
+          <div id="images">
+            <img class="junkFoodImg" src="img/object-1.png" alt="" />
+            <img class="junkFoodImg" src="img/object-2.png" alt="" />
+            <img class="junkFoodImg" src="img/object-3.png" alt="" />
+            <img class="junkFoodImg" src="img/object-4.png" alt="" />
+            <img class="junkFoodImg" src="img/object-5.png" alt="" />
+          </div>
+        </div>
+        <div id="footer"></div>
       </div>
     </div>
+    <div id="finalPage">
+      <div id="playAgainButton"></div>
+    </div>
     <script src="js/code.jquery.com_jquery-3.7.0.min.js"></script>
-    <script src="js/scripts.js?v=2"></script>
+    <script src="js/scripts.js?v=1"></script>
   </body>
 </html>

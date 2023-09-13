@@ -1,25 +1,21 @@
 $(document).ready(function () {
-  const canvasContainer = document.querySelector(".container");
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-  const explosionSound = document.querySelector(".explosionSound");
+  let canvasContainer;
+  let canvas;
+  let ctx;
 
   // Game state variables
-  let isExplodePlayer = false;
   let isDraggingPlayer = false;
-  let isGameRunning = false;
   let lives = 3;
-
+  let isGameInitiated = false;
   // Set canvas dimensions and handle window resize
   function setCanvasDimensions() {
     canvas.width = canvasContainer.clientWidth;
-    canvas.height = canvasContainer.clientHeight - 100;
+    canvas.height = canvasContainer.clientHeight - 40;
   }
 
   window.addEventListener("resize", setCanvasDimensions);
-  setCanvasDimensions();
 
-  const player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 50, score: 0 };
+  let player;
   const junkFood = [];
   const junkFoodImages = document.querySelectorAll(".junkFoodImg");
   let junkFoodInternal = null;
@@ -64,13 +60,7 @@ $(document).ready(function () {
 
     drawJunkFood();
     drawPlayer();
-    // drawScore();
-    // drawLives();
-    if (isExplodePlayer) {
-      explodePlayer();
-    } else {
-      requestAnimationFrame(update);
-    }
+    requestAnimationFrame(update);
   }
 
   function drawJunkFood() {
@@ -93,21 +83,12 @@ $(document).ready(function () {
   }
 
   function drawPlayer() {
-    if (!isExplodePlayer) {
-      ctx.fillStyle = "blue";
-      ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
-    }
-  }
-
-  function drawScore() {
-    document.getElementById("score").textContent = `Score: ${Math.max(0, Math.floor(player.score))}`;
+    ctx.fillStyle = "blue";
+    ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
   }
 
   function drawLives() {
-    $("#lives").html("");
-    for (let i = 0; i < lives; i++) {
-      $("<span/>").html("♥").appendTo($("#lives"));
-    }
+    $("#lives").html(`<img src="img/lives/${lives}.png" height="40" alt="" /> <span>: ${lives}</span>`);
   }
 
   function checkCollisionWithPlayer(food) {
@@ -118,74 +99,69 @@ $(document).ready(function () {
     if (food.isJunkFood) {
       lives--;
       drawLives();
-      if (player.size < player.maxSize) {
-        player.size += 10;
-      } else {
-        isExplodePlayer = true;
+      if (lives <= 0) {
+        gameOver();
       }
-      player.score -= 5;
     }
-    /* for healthy food */
-    // else {
-    //   if (player.size > player.minSize) {
-    //     player.size -= 10;
-    //   }
-    //   player.score += 10;
-    // }
   }
 
   function isOutOfBounds(food) {
     return (food.isJunkFood && (food.y > canvas.height || food.x < -20 || food.x > canvas.width + 20)) || (!food.isJunkFood && (food.x < -20 || food.x > canvas.width + 20 || food.y < -20 || food.y > canvas.height + 20));
   }
 
-  function explodePlayer() {
-    clearInterval(timer.interval);
-    clearInterval(junkFoodInternal);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    $(canvas).hide();
-    $(".explodeContainer").show();
-    explosionSound.currentTime = 0;
-    explosionSound.play();
-    setTimeout(() => {
-      $(".explodeContainer").hide();
-      $(canvas).show();
-      explosionSound.pause();
-      gameOver();
-      resetGame();
-    }, 2000);
+  function gotoInstructionsPage() {
+    $("#startPage").hide();
+    $("#instructionsPage").show();
   }
 
   function startGame() {
-    document.getElementById("startButton").disabled = true;
-    isGameRunning = true;
+    $("#instructionsPage").hide();
+    $("#gamePage").show();
+    setGame();
+    update();
+  }
+
+  function setGame() {
+    canvasContainer = document.querySelector(".canvasContainer");
+    canvas = document.getElementById("gameCanvas");
+    ctx = canvas.getContext("2d");
+    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, minSize: 30, maxSize: 50, score: 0 };
+    // Event listeners
+    canvas.addEventListener("touchstart", handleTouchStart);
+    canvas.addEventListener("touchmove", handleTouchMove);
+    canvas.addEventListener("touchend", handleTouchEnd);
+
+    setCanvasDimensions();
     timer.interval = setInterval(countDown, 1000);
     junkFoodInternal = setInterval(createJunkFood, 500);
-    update();
+  }
+
+  function playAgain() {
+    $("#finalPage").hide();
+    $("#startPage").show();
   }
 
   function countDown() {
     timer.seconds--;
-    document.getElementById("timer").textContent = `Time: ${timer.seconds}`;
+    document.getElementById("timer").textContent = `${timer.seconds < 10 ? "0" + timer.seconds : timer.seconds} sec`;
     if (timer.seconds <= 0) {
       gameOver();
-      resetGame();
     }
   }
 
   function gameOver() {
-    isGameRunning = false;
-    clearInterval(timer.interval);
-    clearInterval(junkFoodInternal);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    alert(`Game Over! Your Score: ${Math.max(0, Math.floor(player.score))}`);
-    document.getElementById("startButton").disabled = false;
+    resetGame();
+    $("#gamePage").hide();
+    $("#finalPage").show();
   }
 
   function resetGame() {
+    clearInterval(timer.interval);
+    clearInterval(junkFoodInternal);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.x = canvas.width / 2;
     player.y = canvas.height / 2;
     player.size = 30;
-    player.score = 0;
     junkFood.length = 0;
     timer.seconds = 30;
     lives = 3;
@@ -198,7 +174,7 @@ $(document).ready(function () {
     const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
     const touchY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
 
-    if (isGameRunning && isInsidePlayerBounds(touchX, touchY)) {
+    if (isInsidePlayerBounds(touchX, touchY)) {
       isDraggingPlayer = true;
     }
   }
@@ -222,11 +198,6 @@ $(document).ready(function () {
     return x >= player.x - player.size / 2 && x <= player.x + player.size / 2 && y >= player.y - player.size / 2 && y <= player.y + player.size / 2;
   }
 
-  // Event listeners
-  canvas.addEventListener("touchstart", handleTouchStart);
-  canvas.addEventListener("touchmove", handleTouchMove);
-  canvas.addEventListener("touchend", handleTouchEnd);
-
   $(document).on("contextmenu", function (e) {
     e.preventDefault();
   });
@@ -235,6 +206,8 @@ $(document).ready(function () {
     e.preventDefault();
   });
 
-  // Start the game
-  document.getElementById("startButton").addEventListener("click", startGame);
+  /* handle buttons */
+  $("#gotoInstructionsButton").on("click", gotoInstructionsPage);
+  $("#startButton").on("click", startGame);
+  $("#playAgainButton").on("click", playAgain);
 });
